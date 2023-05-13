@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/behavior-table-app/static/css/main.ba693e7d.css",
+    "main.js": "/behavior-table-app/static/js/main.81bd14fb.js",
+    "static/js/787.200771f5.chunk.js": "/behavior-table-app/static/js/787.200771f5.chunk.js",
+    "index.html": "/behavior-table-app/index.html",
+    "main.ba693e7d.css.map": "/behavior-table-app/static/css/main.ba693e7d.css.map",
+    "main.81bd14fb.js.map": "/behavior-table-app/static/js/main.81bd14fb.js.map",
+    "787.200771f5.chunk.js.map": "/behavior-table-app/static/js/787.200771f5.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.ba693e7d.css",
+    "static/js/main.81bd14fb.js"
+  ]
+}
