@@ -7,7 +7,6 @@ Modal.setAppElement('#root');
 const initialState = {
   points: 0,
   coins: 0,
-  isFirstTimeThisWeek: true,
   behaviorData: [
     [
       { text: 'תפילה', checked: false },
@@ -97,7 +96,6 @@ const App = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [selectedCol, setSelectedCol] = useState(null);
   const [checkedOptions, setCheckedOptions] = useState([]);
-  const [isFirstTimeThisWeek, setIsFirstTimeThisWeek] = useState(initialState.isFirstTimeThisWeek);
 
   useEffect(() => {
     if (points > 100) {
@@ -108,32 +106,35 @@ const App = () => {
 
   useEffect(() => {
     const storedData = getStoredData();
-    const today = new Date().getDay();
+    const currentWeek = getWeekNumber();
 
     if (storedData) {
       setBehaviorData(storedData.behaviorData);
       setPoints(storedData.points);
       setCoins(storedData.coins);
-      setIsFirstTimeThisWeek(storedData.isFirstTimeThisWeek);
+      
+      if (storedData.weekNumber !== currentWeek) {
+        resetCheckedState();
+      }
     }
+  }, []);
 
-    if (today === 0 && isFirstTimeThisWeek) {
+  const resetCheckedState = () => {
     const newData = behaviorData.map((row) =>
       row.map((cell) => ({ ...cell, checked: false }))
     );
     setBehaviorData(newData);
-  }
-  }, []);
+    storeData(newData);
+  };
   
   useEffect(() => {
     const dataToStore = {
       behaviorData,
       points,
-      coins,
-      isFirstTimeThisWeek
+      coins
     };
     storeData(dataToStore);
-  }, [behaviorData, points, coins, isFirstTimeThisWeek]);
+  }, [behaviorData, points, coins]);
 
   const handleCheckboxChange = (index) => {
     const updatedOptions = [...checkedOptions];
@@ -146,7 +147,6 @@ const App = () => {
   };
 
   const handleSave = () => {
-    setIsFirstTimeThisWeek(false);
     const newData = [...behaviorData];
     newData[selectedRow][selectedCol].checked = checkedOptions.length > 0;
 
@@ -181,8 +181,19 @@ const App = () => {
     if (data.points === 0 && data.coins === 0) {
       return;
     }
-    localStorage.setItem('behaviorData', JSON.stringify(data));
+    const currentWeek = getWeekNumber();
+    const storedData = { ...data, weekNumber: currentWeek };
+    localStorage.setItem('behaviorData', JSON.stringify(storedData));
   }
+
+  const getWeekNumber = () => {
+    const today = new Date();
+    const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+    const daysOffset = firstDayOfYear.getDay() === 0 ? 1 : 8 - firstDayOfYear.getDay();
+    const firstWeekStartDate = new Date(today.getFullYear(), 0, daysOffset);
+    const weekNumber = Math.floor((today - firstWeekStartDate) / (7 * 24 * 60 * 60 * 1000));
+    return weekNumber;
+  };
   
   function getStoredData() {
     const data = localStorage.getItem('behaviorData');
